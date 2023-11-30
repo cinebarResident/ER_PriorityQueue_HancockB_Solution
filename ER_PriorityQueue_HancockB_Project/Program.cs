@@ -12,7 +12,7 @@ namespace ER_Priority_Queue_Hancock_Project
         static void Main(string[] args)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "Patients.csv";
-            PriorityQueue<Patient, int> priorityQueue = new PriorityQueue<Patient, int>();
+            PriorityQueue<Patient, (int,DateTime)> priorityQueue = new PriorityQueue<Patient, (int,DateTime)>();
             priorityQueue = ReadPatientListFromCsv(path);
 
 
@@ -60,7 +60,7 @@ namespace ER_Priority_Queue_Hancock_Project
             }
         }
 
-        static void ProcessPatient(PriorityQueue<Patient, int> priorityQueue)
+        static void ProcessPatient(PriorityQueue<Patient, (int, DateTime)> priorityQueue)
         {
             if (priorityQueue.Count > 0)
             {
@@ -74,7 +74,7 @@ namespace ER_Priority_Queue_Hancock_Project
             }
         }
 
-        static PriorityQueue<Patient, int> Census(PriorityQueue<Patient, int> priorityQueue)
+        static void Census(PriorityQueue<Patient, (int, DateTime)> priorityQueue)
         {
             int count = priorityQueue.Count;
 
@@ -82,23 +82,22 @@ namespace ER_Priority_Queue_Hancock_Project
             Console.WriteLine("\n" + String.Format("{0,-15} {1,-20} {2,-17} {3,8}", "FIRST NAME", "LAST NAME", "DOB", "PRIORITY"));
             for (int i = 0; i < count; i++)
             {
-                if (priorityQueue.TryDequeue(out Patient copyPatient, out int priority))
+                if (priorityQueue.Count != 0)
                 {
-                    Console.WriteLine(copyPatient.ToString());
-                    tempPatientList.Add(copyPatient);
+                    Patient tempPatient = priorityQueue.Dequeue();
+                    Console.WriteLine(tempPatient.ToString());
+                    tempPatientList.Add(tempPatient);
                 }
             }
             foreach (Patient patient in tempPatientList)
             {
-                priorityQueue.Enqueue(patient, patient.Priority);
+                priorityQueue.Enqueue(patient, (patient.Priority, patient.ArrivalTime));
             }
-
-            return priorityQueue;
         }
 
-        static PriorityQueue<Patient, int> ReadPatientListFromCsv(string path)
+        static PriorityQueue<Patient, (int, DateTime)> ReadPatientListFromCsv(string path)
         {
-            PriorityQueue<Patient, int> priorityQueue = new PriorityQueue<Patient, int>();
+            PriorityQueue<Patient, (int,DateTime)> priorityQueue = new PriorityQueue<Patient, (int, DateTime)>();
 
             string[] lines = File.ReadAllLines(path);
 
@@ -113,8 +112,9 @@ namespace ER_Priority_Queue_Hancock_Project
                 bool tryPriority = int.TryParse(values[3], out int priority);
                 if (tryDate && tryPriority)
                 {
-                    Patient patient = new Patient(firstName, lastName, dateOfBirth, priority);
-                    priorityQueue.Enqueue(patient, patient.Priority);
+                    DateTime arrivalTime = DateTime.Now;
+                    Patient patient = new Patient(firstName, lastName, dateOfBirth, priority, arrivalTime);
+                    priorityQueue.Enqueue(patient, (patient.Priority, patient.ArrivalTime));
                 }
             }
             return priorityQueue;
@@ -129,7 +129,7 @@ namespace ER_Priority_Queue_Hancock_Project
                 "\n\nPlease select an option:  ";
         }
 
-        static int AddPatient(PriorityQueue<Patient, int> priorityQueue)
+        static int AddPatient(PriorityQueue<Patient, (int, DateTime)> priorityQueue)
         {
             Console.WriteLine("Please enter the following details:");
             Console.Write("Enter First Name:  ");
@@ -159,8 +159,9 @@ namespace ER_Priority_Queue_Hancock_Project
                 }
                 Console.WriteLine("Invalid priority.  Please enter a number between 1 and 5.");
             }
-            Patient patient = new Patient(firstName, lastName, dateOfBirth, priority);
-            priorityQueue.Enqueue(patient, patient.Priority);
+            DateTime arrivalTime = DateTime.Now;
+            Patient patient = new Patient(firstName, lastName, dateOfBirth, priority, arrivalTime);
+            priorityQueue.Enqueue(patient, (patient.Priority, patient.ArrivalTime));
 
             return priorityQueue.Count;
         }

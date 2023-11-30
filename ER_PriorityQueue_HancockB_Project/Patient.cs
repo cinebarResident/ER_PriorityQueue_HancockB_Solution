@@ -1,5 +1,4 @@
-﻿
-namespace ER_Priority_Queue_Hancock_Project
+﻿namespace ER_Priority_Queue_Hancock_Project
 {
     internal class Patient
     {
@@ -7,8 +6,9 @@ namespace ER_Priority_Queue_Hancock_Project
         private string _lastName;
         private DateOnly _dateOfBirth;
         private int _priority;
+        private DateTime _arrivalTime;
 
-        public Patient(string FirstName, string LastName, DateTime DateOfBirth, int Priority)
+        public Patient(string FirstName, string LastName, DateTime DateOfBirth, int Priority, DateTime ArrivalTime)
         {
             _firstName = FirstName;
             _lastName = LastName;
@@ -20,11 +20,16 @@ namespace ER_Priority_Queue_Hancock_Project
             DateOnly dateOfBirth = DateOnly.FromDateTime(DateOfBirth);
             _dateOfBirth = dateOfBirth;
             _priority = Priority;
+            _arrivalTime = ArrivalTime;
         }
 
         public int Priority
         {
             get { return _priority; }
+        }
+        public DateTime ArrivalTime
+        {
+            get { return _arrivalTime; }
         }
 
         public override string ToString()
